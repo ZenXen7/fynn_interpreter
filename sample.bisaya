@@ -1,0 +1,12 @@
+SUGOD  
+        MUGNA NUMERO x, y, z
+        z = 5  
+        MUGNA LETRA a_1
+        a_1 = 'n'
+        MUGNA TINUOD t
+        t = "OO"  
+        x = 4
+        y = 4
+        a_1 = 'c' -- this is a comment 
+        IPAKITA: x & t & z & "$" & a_1 & "#" & "last"
+KATAPUSAN
