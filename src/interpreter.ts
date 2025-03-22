@@ -18,7 +18,7 @@ export class Interpreter {
     }
 
     interpret(statements: ASTNode[]): string {
-        this.output = ''; // Reset output
+        this.output = ''; 
         try {
             for (const statement of statements) {
                 this.execute(statement);
@@ -81,14 +81,18 @@ export class Interpreter {
                     throw new RuntimeError(`Invalid type: ${node.varType.type}`, node.varType);
             }
         }
-
-        this.environment.variables.set(node.name.lexeme, {
-            type: node.varType.type,
-            value: value
-        });
-
+    
+      
+        for (const nameToken of node.names) {
+            this.environment.variables.set(nameToken.lexeme, {
+                type: node.varType.type,
+                value: value
+            });
+        }
+    
         return value;
     }
+    
 
     private executePrint(node: PrintStmt): void {
         const value = this.execute(node.value);

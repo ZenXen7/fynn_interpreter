@@ -60,13 +60,33 @@ export class Lexer {
             case ',': this.addToken(TokenType.COMMA); break;
             case ':': this.addToken(TokenType.COLON); break;
             case '+': this.addToken(TokenType.PLUS); break;
+            case ',':
+            this.addToken(TokenType.COMMA);
+            break;
+
+            case '&':
+            this.addToken(TokenType.CONCAT);
+            break;
+
+            case "'":
+                    this.charLiteral();
+                    break;
             case '-': 
-                if (this.match('-')) {
-                    while (this.peek() !== '\n' && !this.isAtEnd()) this.advance();
-                } else {
-                    this.addToken(TokenType.MINUS);
+            if (this.match('-')) {
+                
+                while (this.peek() !== '\n' && !this.isAtEnd()) this.advance();
+
+                
+                if (this.peek() === '\n') {
+                    this.advance();
+                    this.line++;
+                    this.column = 1;
                 }
-                break;
+            } else {
+                this.addToken(TokenType.MINUS);
+            }
+            break;
+
             case '*': this.addToken(TokenType.MULTIPLY); break;
             case '/': this.addToken(TokenType.DIVIDE); break;
             case '=':
@@ -106,6 +126,22 @@ export class Lexer {
                 }
         }
     }
+    private charLiteral(): void {
+        if (this.isAtEnd() || this.peek() === '\n') {
+            throw new Error(`Unterminated character at line ${this.line}, column ${this.column}`);
+        }
+    
+        const char = this.advance(); 
+    
+        if (this.peek() !== "'") {
+            throw new Error(`Invalid character literal at line ${this.line}, column ${this.column}`);
+        }
+        
+        this.advance(); 
+    
+        this.addToken(TokenType.LETRA, char);
+    }
+    
 
     private string(): void {
         while (this.peek() !== '"' && !this.isAtEnd()) {

@@ -122,7 +122,7 @@ class Runtime {
     }
 }
 
-// If running directly (not imported as a module)
+
 if (require.main === module) {
     const interpreter = new BisayaInterpreter();
     if (process.argv.length > 2) {

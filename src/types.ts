@@ -1,5 +1,5 @@
 export enum TokenType {
-    // Keywords
+    
     SUGOD = 'SUGOD',
     KATAPUSAN = 'KATAPUSAN',
     MUGNA = 'MUGNA',
@@ -18,7 +18,7 @@ export enum TokenType {
     O = 'O',
     DILI = 'DILI',
     
-    // Operators
+  
     PLUS = '+',
     MINUS = '-',
     MULTIPLY = '*',
@@ -33,14 +33,14 @@ export enum TokenType {
     AND = 'UG',
     OR = 'O',
     NOT = 'DILI',
-    ASSIGN = '=', // Add this for assignment
+    ASSIGN = '=',
     
-    // Special characters
+  
     NEWLINE = '$',
     CONCAT = '&',
     ESCAPE = '[]',
     
-    // Other
+   
     IDENTIFIER = 'IDENTIFIER',
     NUMBER = 'NUMBER',
     STRING = 'STRING',
@@ -106,9 +106,9 @@ export interface AssignExpr extends ASTNode {
 }
 
 export interface VarDeclStmt extends ASTNode {
-    varType: Token;
-    name: Token;
-    initializer?: ASTNode;
+    varType: Token;  
+    names: Token[];  
+    initializer?: ASTNode;  
 }
 
 export interface PrintStmt extends ASTNode {

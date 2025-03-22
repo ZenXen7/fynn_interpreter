@@ -18,15 +18,15 @@ export class Parser {
     public parse(): ASTNode[] {
         const statements: ASTNode[] = [];
         
-        // Expect SUGOD at the start
+       
         this.consume(TokenType.SUGOD, "Expect 'SUGOD' at start of program.");
         
-        // Parse statements until we reach KATAPUSAN
+        
         while (!this.check(TokenType.KATAPUSAN) && !this.isAtEnd()) {
             statements.push(this.declaration());
         }
         
-        // Expect KATAPUSAN at the end
+       
         this.consume(TokenType.KATAPUSAN, "Expect 'KATAPUSAN' at end of program.");
         
         return statements;
@@ -54,36 +54,35 @@ export class Parser {
     }
 
     private varDeclaration(): ASTNode {
-        // Track the starting token for error reporting
         const startToken = this.previous();
-        
-        // Get the variable type (NUMERO, LETRA, etc.)
-        const type = this.advance();
-        if (type.type !== TokenType.NUMERO && 
-            type.type !== TokenType.LETRA && 
-            type.type !== TokenType.TINUOD && 
-            type.type !== TokenType.TIPIK) {
+        const type = this.advance(); 
+    
+        if (![TokenType.NUMERO, TokenType.LETRA, TokenType.TINUOD, TokenType.TIPIK].includes(type.type)) {
             throw new ParseError(`Expected type after 'MUGNA', got ${type.type}`);
         }
-        
-        // Get the variable name
-        const name = this.consume(TokenType.IDENTIFIER, "Expect variable name.");
-        
-        // Handle initialization
+    
+       
+        const names: Token[] = [];
+        do {
+            names.push(this.consume(TokenType.IDENTIFIER, "Expect variable name."));
+        } while (this.match(TokenType.COMMA));
+    
         let initializer: ASTNode | undefined;
         if (this.match(TokenType.ASSIGN)) {
             initializer = this.expression();
         }
-
+    
         return {
             type: 'VarDeclStmt',
             line: startToken.line,
             column: startToken.column,
             varType: type,
-            name: name,
+            names: names,  
             initializer: initializer
         } as VarDeclStmt;
     }
+    
+    
 
     private statement(): ASTNode {
         if (this.match(TokenType.IPAKITA)) {
@@ -180,8 +179,24 @@ export class Parser {
     }
 
     private expression(): ASTNode {
-        return this.assignment();
+        let expr = this.assignment();
+    
+        while (this.match(TokenType.CONCAT)) { 
+            const operator = this.previous();
+            const right = this.assignment();
+            expr = {
+                type: 'BinaryExpr',
+                line: operator.line,
+                column: operator.column,
+                left: expr,
+                operator: operator,
+                right: right
+            } as BinaryExpr;
+        }
+    
+        return expr;
     }
+    
 
     private assignment(): ASTNode {
         const expr = this.primary();
@@ -287,12 +302,12 @@ export class Parser {
     }
 
     private primary(): ASTNode {
-        if (this.match(TokenType.NUMERO, TokenType.LETRA)) {
+        if (this.match(TokenType.NUMERO, TokenType.LETRA, TokenType.TINUOD)) {
             return {
                 type: 'LiteralExpr',
                 line: this.previous().line,
                 column: this.previous().column,
-                value: this.previous().literal // Ensure proper extraction of string literals
+                value: this.previous().literal
             } as LiteralExpr;
         }
     
@@ -308,6 +323,7 @@ export class Parser {
         console.error("Unexpected token:", this.peek());
         throw new ParseError(`Expect expression. Found: ${this.peek().type}`);
     }
+    
     
     
 
@@ -348,7 +364,7 @@ export class Parser {
         throw new ParseError(message);
     }
 
-    // Add error recovery method
+    
     private synchronize(): void {
         this.advance();
         while (!this.isAtEnd()) {
