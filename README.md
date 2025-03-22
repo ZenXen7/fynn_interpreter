@@ -18,14 +18,11 @@ An interpreter for the BISAYA++ programming language, a Cebuano-based programmin
 npm install
 ```
 
-2. Build the project:
-```bash
-npm run build
-```
 
-3. Run the interpreter:
+
+2. Run the interpreter:
 ```bash
-npm start
+npx ts-node src/index.ts sample.bisaya
 ```
 
 ## Sample Program
